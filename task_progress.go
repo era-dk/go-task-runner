@@ -11,7 +11,7 @@ func (t *Task) Progress(ctx context.Context, level int) Lines {
     collapse := t.state == TaskStateCompleted && t.Collapse
     if !t.Hidden {
         lines.Add(level, t.Spinner(), ApplyStyle(StyleTitle, t.Title))
-        if t.OutputLines > 0 && !collapse {
+        if t.OutputLines > 0 && t.state == TaskStateProgress && !collapse {
             output := strings.Trim(t.Output.String(), "\n")
             if output != "" {
                 splits := strings.Split(output, "\n")
