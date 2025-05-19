@@ -7,14 +7,12 @@ import (
 var SpinnerIcons = map[TaskState][]string{
 	TaskStateIdle: {" "},
 	TaskStateProgress: {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"},
-	//TaskStateSkipped: {"!"},
 	TaskStateCompleted: {"✔"},
 	TaskStateError: {"✘"},
 }
 
 var SpinnerStyles = map[TaskState]aec.ANSI{
 	TaskStateProgress: aec.YellowF,
-	//TaskStateSkipped: aec.YellowF,
 	TaskStateCompleted: aec.GreenF,
 	TaskStateError: aec.RedF,
 }

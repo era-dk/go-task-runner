@@ -41,7 +41,7 @@ var counterBashResolver = func (counter int) Resolver {
 }
 
 var mainTask = &Task{
-	Hidden: false,
+	Hidden: true,
 	Subtasks: []*Task{
 		{
 			Title: "Configure task",

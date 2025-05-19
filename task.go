@@ -1,9 +1,10 @@
 package runner
 
-import "bytes"
+import (
+	"bytes"
+)
 
 type TaskState int
-
 const (
     TaskStateIdle TaskState = iota
     TaskStateProgress
