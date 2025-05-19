@@ -27,6 +27,7 @@ func main() {
 		Subtasks: []*taskRunner.Task{
 			{
 				Title: "Task 1",
+				OutputLines: 1,
 				Resolver: func(ctx context.Context, task *taskRunner.Task, params *taskRunner.ParamsInterface) error {
 					myParams := (*params).(MyParamsStruct)
 					task.Msg(fmt.Sprintf("param key 1: %s", myParams.Key1))
@@ -34,26 +35,21 @@ func main() {
 					myParams.Key2 = "value2"
 					*params = myParams
 
-					return Notice("my notice")
+					return nil
 				},
 			},
 			{
 				Title: "Concurrent Subtask 2",
-				OutputLines: 5,
-				Resolver: counterFnResolver(15),
-			},
-			{
-				Title: "Concurrent Subtask 3",
 				Subtasks: []*taskRunner.Task{
 					{
 						Title: "Quick task",
-						Resolver: counterFnResolver(1),
+						OutputLines: 2,
+						Resolver: counterFnResolver(2),
 					},
 					{
 						Title: "An error task",
 						Resolver: func(ctx context.Context, task *taskRunner.Task, params taskRunner.ParamsInterface) error {
-							return taskRunner.Notice("it's a notice exception")
-              //return errors.New("it's an error exception")
+              				return errors.New("it's an error exception")
 						},
 					},
 				},

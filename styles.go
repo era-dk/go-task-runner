@@ -10,7 +10,6 @@ const (
     StyleTitle Style = iota
     StyleMessage
     StyleSuccess
-    StyleNotice
     StyleError
 )
 
@@ -18,7 +17,6 @@ var Styles = map[Style]aec.ANSI{
     StyleTitle: aec.CyanF,
     StyleMessage: aec.Color8BitF(aec.NewRGB8Bit(132, 132, 132)),
     StyleSuccess: aec.GreenF,
-    StyleNotice: aec.YellowF,
     StyleError: aec.RedF,
 }
 

@@ -7,7 +7,6 @@ type TaskState int
 const (
     TaskStateIdle TaskState = iota
     TaskStateProgress
-    TaskStateNoticed
     TaskStateCompleted
     TaskStateError
 )
@@ -17,6 +16,7 @@ type Task struct {
     Resolver Resolver
     Hidden bool
     Collapse bool
+    SkipOnFail bool
     OutputLines int
     SubtasksConcurrent bool
     Subtasks []*Task
@@ -24,6 +24,5 @@ type Task struct {
     Output *bytes.Buffer
     state TaskState
     spinnerIndex int
-    notice error
     err error
 }

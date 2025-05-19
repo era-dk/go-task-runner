@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os/exec"
@@ -40,7 +41,7 @@ var counterBashResolver = func (counter int) Resolver {
 }
 
 var mainTask = &Task{
-	Hidden: true,
+	Hidden: false,
 	Subtasks: []*Task{
 		{
 			Title: "Configure task",
@@ -60,6 +61,10 @@ var mainTask = &Task{
 			Title: "Validate",
 			Collapse: true,
 			SubtasksConcurrent: true,
+			SkipOnFail: true,
+			Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
+				return errors.New("exception")
+			},
 			Subtasks: []*Task{
 				{
 					Title: "Validate task 1",
@@ -68,7 +73,7 @@ var mainTask = &Task{
 						myParams := (*params).(MyParams)
 						task.Msg(fmt.Sprintf("param key 2: %s", myParams.Key2))
 	
-						return Notice("my notice")
+						return nil
 					},
 				},
 				{
@@ -118,7 +123,7 @@ var mainTask = &Task{
 				{
 					Title: "An error task",
 					Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
-						return Notice("it's a notice exception")
+						return nil
 						//return errors.New("it's an error exception")
 					},
 				},

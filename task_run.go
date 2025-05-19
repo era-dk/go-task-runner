@@ -14,23 +14,16 @@ func (t *Task) Run(ctx context.Context, params *ParamsInterface) error {
             Str("title", t.Title).
             Msg("resolve task")
         if err := t.Resolver(ctx, t, params); err != nil {
-            _, ok := err.(*NoticeError)
-            if ok {
-                t.notice = err
-                t.state = TaskStateNoticed
-                log.Warn().
-                    Str("notice", err.Error()).
-                    Str("title", t.Title).
-                    Msg("task noticed")
-                return nil
-            }
-
-            t.err = err
-            t.state = TaskStateError
             log.Error().
                 Err(err).
                 Str("title", t.Title).
                 Msg("task failed")
+
+            t.err = err
+            t.state = TaskStateError
+            if t.SkipOnFail {
+                return nil
+            }
             return err
         }
     }
