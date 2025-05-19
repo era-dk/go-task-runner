@@ -3,6 +3,14 @@ package runner
 import (
 	"context"
 	"strings"
+
+	"github.com/morikuni/aec"
+)
+
+var (
+    ProgressStyleTitle = aec.CyanF
+    ProgressStyleMessage = aec.Color8BitF(aec.NewRGB8Bit(132, 132, 132))
+    ProgressStyleError = aec.RedF
 )
 
 func (t *Task) Progress(ctx context.Context, level int) Lines {
@@ -10,7 +18,7 @@ func (t *Task) Progress(ctx context.Context, level int) Lines {
 
     collapse := t.state == TaskStateCompleted && t.Collapse
     if !t.Hidden {
-        lines.Add(level, t.Spinner(), ApplyStyle(StyleTitle, t.Title), t.Status())
+        lines.Add(level, t.Spinner(), ProgressStyleTitle.Apply(t.Title), t.Status())
         if t.OutputLines > 0 && t.state == TaskStateProgress && !collapse {
             output := strings.Trim(t.Output.String(), "\n")
             if output != "" {
@@ -19,12 +27,12 @@ func (t *Task) Progress(ctx context.Context, level int) Lines {
                     splits = splits[(len(splits) - t.OutputLines):]
                 }
                 for _, s := range splits {
-                    lines.Add(level + 2, "", ApplyStyle(StyleMessage, s), "")
+                    lines.Add(level + 2, "", ProgressStyleMessage.Apply(s), "")
                 }
             }
         }
         if t.err != nil {
-            lines.Add(level + 2, "", ApplyStyle(StyleError, t.err.Error()), "")
+            lines.Add(level + 2, "", ProgressStyleError.Apply(t.err.Error()), "")
         }
     }
 

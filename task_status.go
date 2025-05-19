@@ -13,7 +13,6 @@ var StatusLabels = map[TaskState]string{
 
 var StatusStyles = map[TaskState]aec.ANSI{
 	TaskStateProgress: aec.YellowF,
-	TaskStateCompleted: aec.GreenF,
 	TaskStateError: aec.RedF,
 }
 
