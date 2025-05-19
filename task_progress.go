@@ -17,7 +17,9 @@ var (
 func (t *Task) Progress(ctx context.Context, level int) Lines {
     var lines Lines
 
-    collapse := t.state == TaskStateCompleted && t.Collapse
+    collapse := t.Collapse && 
+        t.state != TaskStateProgress &&
+        t.state != TaskStateError
     if !t.Hidden {
         lines.Add(level, fmt.Sprintf("%s %s %s", t.Spinner(), ProgressStyleTitle.Apply(t.Title), t.Status()))
         if t.OutputLines > 0 && t.state == TaskStateProgress && !collapse {

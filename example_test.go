@@ -63,13 +63,14 @@ var mainTask = &Task{
 			SubtasksConcurrent: true,
 			SkipOnFail: true,
 			Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
-				return errors.New("exception")
+				return nil
 			},
 			Subtasks: []*Task{
 				{
 					Title: "Validate task 1",
 					OutputLines: 1,
 					Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
+						return errors.New("exception")
 						myParams := (*params).(MyParams)
 						task.Msg(fmt.Sprintf("param key 2: %s", myParams.Key2))
 	
