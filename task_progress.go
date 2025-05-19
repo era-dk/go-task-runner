@@ -32,9 +32,6 @@ func (t *Task) Progress(ctx context.Context, level int) Lines {
                 }
             }
         }
-        if t.err != nil {
-            lines.Add(level + 3, ProgressStyleError.Apply(t.err.Error()))
-        }
     }
 
     if !collapse {
