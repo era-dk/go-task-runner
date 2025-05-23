@@ -5,19 +5,13 @@ import (
 	"time"
 )
 
-func (r *Runner) listenNoProgress(ctx context.Context) {
-    loop:
-    for {
-        select {
-        case <-ctx.Done():
-            break loop
-        }
-    }
-}
-
-func (r *Runner) listenProgress(ctx context.Context) {
+func (r *Runner) listen(ctx context.Context) {
     ticker := time.NewTicker(100 * time.Millisecond)
-    defer ticker.Stop()
+    if r.noProgress {
+        ticker.Stop()
+    } else {
+        defer ticker.Stop()
+    }
 
     r.progressWriter.Start()
     defer r.progressWriter.End()
@@ -29,8 +23,10 @@ func (r *Runner) listenProgress(ctx context.Context) {
             lines := r.task.Progress(ctx, 0)
             r.progressWriter.PrintLines(lines)
         case <-ctx.Done():
-            lines := r.task.Progress(ctx, 0)
-            r.progressWriter.PrintLines(lines)
+            if !r.noProgress {
+                lines := r.task.Progress(ctx, 0)
+                r.progressWriter.PrintLines(lines)
+            }
             break loop
         }
     }

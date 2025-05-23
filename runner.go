@@ -48,11 +48,7 @@ func (r *Runner) Run(ctx context.Context, params ParamsInterface) error {
         cancel()
     }()
 
-    if r.noProgress {
-        r.listenNoProgress(ctx)
-    } else {
-        r.listenProgress(ctx)
-    }
+    r.listen(ctx)
     
     log.Info().Msg("runner completed")
     return nil
