@@ -27,7 +27,8 @@ var counterFnResolver = func (counter int) Resolver {
 
 var counterBashResolver = func (counter int) Resolver {
 	return func(ctx context.Context, task *Task, params *ParamsInterface) error {
-		execCmd := exec.Command(
+		execCmd := exec.CommandContext(
+			ctx,
 			"/bin/sh",
 			"-c",
 			fmt.Sprintf("for i in `seq %d`; do echo \"bash-counter[1-%d] - $i\"; sleep 1; done;", counter, counter),
@@ -70,11 +71,7 @@ var mainTask = &Task{
 					Title: "Validate task 1",
 					OutputLines: 1,
 					Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
-						return errors.New("exception")
-						myParams := (*params).(MyParams)
-						task.Msg(fmt.Sprintf("param key 2: %s", myParams.Key2))
-	
-						return nil
+						return errors.New("my exception")
 					},
 				},
 				{
@@ -83,13 +80,13 @@ var mainTask = &Task{
 					Subtasks: []*Task{
 						{
 							Title: "Validate task 2 - counter A",
-							OutputLines: 2,
+							OutputLines: 1,
 							Collapse: true,
-							Resolver: counterFnResolver(4),
+							Resolver: counterBashResolver(14),
 						},
 						{
 							Title: "Validate task 2 - counter B",
-							OutputLines: 2,
+							OutputLines: 1,
 							Resolver: counterFnResolver(9),
 						},
 					},

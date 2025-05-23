@@ -22,15 +22,15 @@ type ttyWriter struct {
     numLines uint
 }
 
-func (w *ttyWriter) HideCursor() {
+func (w *ttyWriter) Start() {
     fmt.Fprint(w.out, aec.Hide)
 }
 
-func (w *ttyWriter) ShowCursor() {
+func (w *ttyWriter) End() {
     fmt.Fprint(w.out, aec.Show)
 }
 
-func (w *ttyWriter) PrintLines(lines Lines, clearLastLines bool) {
+func (w *ttyWriter) PrintLines(lines Lines) {
     w.mtx.Lock()
     defer w.mtx.Unlock()
 
@@ -45,11 +45,13 @@ func (w *ttyWriter) PrintLines(lines Lines, clearLastLines bool) {
         numLines++
     }
 
-    if clearLastLines {
+    if w.numLines > numLines {
         for i := numLines; i < w.numLines; i++ {
             fmt.Fprintln(w.out, aec.EraseLine(aec.EraseModes.All))
-            numLines++
         }
+        b = aec.EmptyBuilder
+        b = b.Up(w.numLines - numLines)
+        fmt.Fprint(w.out, b.Column(0).ANSI)
     }
 
     w.numLines = numLines
