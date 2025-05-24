@@ -30,7 +30,7 @@ func (r *Runner) NoProgress() *Runner {
     return r
 }
 
-func (r *Runner) Run(ctx context.Context, params ParamsInterface) error {
+func (r *Runner) Run(ctx context.Context) error {
     if err := r.setupLogger(); err != nil {
         return err
     }
@@ -42,14 +42,14 @@ func (r *Runner) Run(ctx context.Context, params ParamsInterface) error {
 
     ctx, cancel := context.WithCancel(ctx)
     go func() {
-        if err := r.task.Run(ctx, &params); err != nil {
+        if err := r.task.Run(ctx); err != nil {
             r.task.state = TaskStateError
         }
         cancel()
     }()
 
     r.listen(ctx)
-    
+
     log.Info().Msg("runner completed")
     return nil
 }

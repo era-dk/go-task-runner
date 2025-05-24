@@ -28,13 +28,8 @@ func main() {
             {
                 Title: "Task 1",
                 OutputLines: 1,
-                Resolver: func(ctx context.Context, task *taskRunner.Task, params *taskRunner.ParamsInterface) error {
-                    myParams := (*params).(MyParamsStruct)
-                    task.Msg(fmt.Sprintf("param key 1: %s", myParams.Key1))
-
-                    myParams.Key2 = "value2"
-                    *params = myParams
-
+                Resolver: func(ctx context.Context, task *taskRunner.Task) error {
+                    task.Msg(fmt.Sprintf("my message: %s", "hello"))
                     return nil
                 },
             },
@@ -48,7 +43,7 @@ func main() {
                     },
                     {
                         Title: "An error task",
-                        Resolver: func(ctx context.Context, task *taskRunner.Task, params taskRunner.ParamsInterface) error {
+                        Resolver: func(ctx context.Context, task *taskRunner.Task) error {
                             return errors.New("it's an error exception")
                         },
                     },
@@ -57,9 +52,7 @@ func main() {
         },
     }
 
-    if err := taskRunner.NewRunner(mainTask).Run(context.Background(), MyParamsStruct{
-        MyOption: "My Value"
-    }); err != nil {
+    if err := taskRunner.NewRunner(mainTask).Run(context.Background()); err != nil {
         log.Fatal(err)
     }
 }

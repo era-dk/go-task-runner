@@ -10,13 +10,9 @@ import (
 	"time"
 )
 
-type MyParams struct {
-	Key1 string
-	Key2 string
-}
 
 var counterFnResolver = func (counter int) Resolver {
-	return func(ctx context.Context, task *Task, params *ParamsInterface) error {
+	return func(ctx context.Context, task *Task) error {
 		for i := range counter {
 			time.Sleep(200 * time.Millisecond)
 			task.Msg(fmt.Sprintf("fn-counter[1-%d] - %d", counter, i+1))
@@ -26,7 +22,7 @@ var counterFnResolver = func (counter int) Resolver {
 }
 
 var counterBashResolver = func (counter int) Resolver {
-	return func(ctx context.Context, task *Task, params *ParamsInterface) error {
+	return func(ctx context.Context, task *Task) error {
 		execCmd := exec.CommandContext(
 			ctx,
 			"/bin/sh",
@@ -47,14 +43,8 @@ var mainTask = &Task{
 		{
 			Title: "Configure task",
 			OutputLines: 1,
-			Resolver: func (ctx context.Context, task *Task, params *ParamsInterface) error {
-				task.Log().Info().
-					Msg("log configure task")
-				myParams := (*params).(MyParams)
-				myParams.Key2 = "value2"
-				*params = myParams
-
-				task.Msg(fmt.Sprintf("param key 1: %s", myParams.Key1))
+			Resolver: func (ctx context.Context, task *Task) error {
+				task.Log().Info().Msg("log configure task")
 				return nil
 			},
 		},
@@ -63,15 +53,15 @@ var mainTask = &Task{
 			Collapse: true,
 			SubtasksConcurrent: true,
 			SkipOnFail: true,
-			Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
-				return nil
+			Resolver: func(ctx context.Context, task *Task) error {
+				return errors.New("my exception")
 			},
 			Subtasks: []*Task{
 				{
 					Title: "Validate task 1",
 					OutputLines: 1,
-					Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
-						return errors.New("my exception")
+					Resolver: func(ctx context.Context, task *Task) error {
+						return nil
 					},
 				},
 				{
@@ -120,7 +110,7 @@ var mainTask = &Task{
 				},
 				{
 					Title: "An error task",
-					Resolver: func(ctx context.Context, task *Task, params *ParamsInterface) error {
+					Resolver: func(ctx context.Context, task *Task) error {
 						return nil
 						//return errors.New("it's an error exception")
 					},
@@ -131,9 +121,7 @@ var mainTask = &Task{
 }
 
 func TestExample(t *testing.T) {
-	if err := NewRunner(mainTask).Run(context.Background(), MyParams{
-		Key1: "value 1",
-	}); err != nil {
+	if err := NewRunner(mainTask).Run(context.Background()); err != nil {
 		log.Fatal(err)
 	}
 }

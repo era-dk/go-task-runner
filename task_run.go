@@ -7,13 +7,13 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func (t *Task) Run(ctx context.Context, params *ParamsInterface) error {
+func (t *Task) Run(ctx context.Context) error {
     t.state = TaskStateProgress
     if t.Resolver != nil {
         log.Info().
             Str("title", t.Title).
             Msg("resolve task")
-        if err := t.Resolver(ctx, t, params); err != nil {
+        if err := t.Resolver(ctx, t); err != nil {
             log.Error().
                 Err(err).
                 Str("title", t.Title).
@@ -32,7 +32,7 @@ func (t *Task) Run(ctx context.Context, params *ParamsInterface) error {
         eg, egCtx := errgroup.WithContext(ctx)
         for _, subtask := range t.Subtasks {
             eg.Go(func() error {
-                if err := subtask.Run(egCtx, params); err != nil {
+                if err := subtask.Run(egCtx); err != nil {
                     subtask.state = TaskStateError
                     return err
                 }
@@ -45,7 +45,7 @@ func (t *Task) Run(ctx context.Context, params *ParamsInterface) error {
         }
     } else {
         for _, subtask := range t.Subtasks {
-            if err := subtask.Run(ctx, params); err != nil {
+            if err := subtask.Run(ctx); err != nil {
                 subtask.state = TaskStateError
                 return err
             }
